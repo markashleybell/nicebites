@@ -1,0 +1,9 @@
+*.html
+*.pyc
+*.db
+.DS_Store
+*.log
+*.cfg
+*.sublime-workspace
+settings.py
+test-data.sql
