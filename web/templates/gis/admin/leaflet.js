@@ -16,19 +16,47 @@
     alert('Only point data is supported');
     {% endif %}
 
-    console.log();
-
+    var _lon = '-4.142275169805998';
+    var _lat = '50.37027608930287';
+    
     var pointRegex = /POINT \(([\-.0-9]+) ([\-.0-9]+)\)/;
 var match = pointRegex.exec(django.jQuery('#{{ id }}').val());
 if (match == null) {
-    alert('Invalid POINT');
-} 
+    // alert('Invalid POINT');
+} else {
+    _lat = match[2];
+    _lon = match[1];
+}
 
     // The admin map for this geometry field.
     {% block map_creation %}
     {{ module }}.map = L.map('{{ id }}_map');
     {{ module }}.tiles = new L.TileLayer({{ module }}.tileUrl, {minZoom: 8, maxZoom: 18, attribution: {{ module }}.attrib, subdomains: {{ module }}.subDomains});
-    {{ module }}.map.setView([match[2], match[1]], 15);
+    {{ module }}.map.setView([_lat, _lon], 15);
     {{ module }}.map.addLayer({{ module }}.tiles);
+
+    var _icon = new L.Icon({
+                    iconUrl: 'http://leafletjs.com/dist/images/marker-icon.png',
+                    iconSize: new L.Point(25, 41),
+                    iconAnchor: new L.Point(12, 41),
+                    popupAnchor: new L.Point(1, -34),
+                    shadowUrl: 'http://leafletjs.com/dist/images/marker-shadow.png',
+                    shadowSize: new L.Point(41, 41)
+                });
+
+        var _position = new L.LatLng(_lat, _lon);
+                    var _marker = new L.Marker(_position, { icon: _icon, draggable: true });
+                    {{ module }}.map.addLayer(_marker);
+
+                    _marker.on('dragend', function (e) {
+                     var coords = e.target.getLatLng();
+                     _lat = coords.lat;
+                     _lng = coords.lng;
+                     // alert(_lat + ':' + _lng);
+                     django.jQuery('#{{ id }}').val('POINT (' + _lon + ' ' + _lat + ')');
+                    });
+//marker.bindPopup('<h1>' + item.name + '</h1>' + item.postcode);
+// _markers.push(marker);
+                
     {% endblock %}    
 }
