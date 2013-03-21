@@ -51,9 +51,9 @@ if (match == null) {
                     _marker.on('dragend', function (e) {
                      var coords = e.target.getLatLng();
                      _lat = coords.lat;
-                     _lng = coords.lng;
+                     _lon = coords.lng;
                      // alert(_lat + ':' + _lng);
-                     django.jQuery('#{{ id }}').val('POINT (' + _lon + ' ' + _lat + ')');
+                     django.jQuery('#{{ id }}').val('SRID=4326;POINT (' + _lon + ' ' + _lat + ')');
                     });
 //marker.bindPopup('<h1>' + item.name + '</h1>' + item.postcode);
 // _markers.push(marker);

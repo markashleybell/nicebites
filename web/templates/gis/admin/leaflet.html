@@ -25,6 +25,6 @@
 </script>
 <div id="{{ id }}_map"{% if LANGUAGE_BIDI %} dir="ltr"{% endif %}></div>
 {% if display_wkt %}<p> WKT debugging window:</p>{% endif %}
-<textarea id="{{ id }}" class="vWKTField required" cols="150" rows="10" name="{{ name }}">{{ wkt }}</textarea>
+<textarea id="{{ id }}" class="vWKTField required" cols="150" rows="10" name="{{ name }}">SRID=4326;{{ wkt }}</textarea>
 <script type="text/javascript">{% block init_function %}{{ module }}.init();{% endblock %}</script>
 </span>

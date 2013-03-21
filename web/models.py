@@ -19,7 +19,5 @@ class Establishment(models.Model):
 	telephone = models.CharField(max_length=20, null=True, blank=True)
 	email = models.CharField(max_length=256, null=True, blank=True)
 	web = models.CharField(max_length=256, null=True, blank=True)
-	lon = models.CharField(max_length=128)
-	lat = models.CharField(max_length=128)
 	location = models.PointField(srid=4326)
 	objects = models.GeoManager()

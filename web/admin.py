@@ -16,6 +16,8 @@ class LeafletGeoPointAdmin(admin.GeoModelAdmin):
 		}
         # js = ("http://cdn.leafletjs.com/leaflet-0.5/leaflet.js",) # Doesn't work
 
+class MyAdmin(admin.OSMGeoAdmin):
+	display_wkt = True
 
 admin.site.register(Region, LeafletGeoPointAdmin)
 admin.site.register(Establishment, LeafletGeoPointAdmin)
