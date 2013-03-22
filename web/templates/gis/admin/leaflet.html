@@ -27,4 +27,15 @@
 {% if display_wkt %}<p> WKT debugging window:</p>{% endif %}
 <textarea id="{{ id }}" class="vWKTField required" cols="150" rows="10" name="{{ name }}">SRID=4326;{{ wkt }}</textarea>
 <script type="text/javascript">{% block init_function %}{{ module }}.init();{% endblock %}</script>
+<script type="text/javascript">
+django.jQuery(document).ready(function(){
+	var postcodeField = django.jQuery('#id_postcode');
+	if(postcodeField.length) {
+		postcodeField.after('<input type="button" id="id_postcode_position" value="Position" />');
+		django.jQuery('#id_postcode_position').bind('click', function(evt) {
+			{{ module }}.locateByPostcode(postcodeField.val());	
+		});
+	}
+});
+</script>
 </span>
