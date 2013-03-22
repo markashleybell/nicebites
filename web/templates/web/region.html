@@ -1,0 +1,16 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+{% if establishments %}
+    <ul>
+    {% for establishment in establishments %}
+        <li>{{ establishment.name }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No establishments are available.</p>
+{% endif %}
+</body>
+</html>
