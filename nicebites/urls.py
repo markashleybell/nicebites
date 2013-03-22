@@ -6,8 +6,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'nicebites.views.home', name='home'),
-    # url(r'^nicebites/', include('nicebites.foo.urls')),
+    url(r'^$', 'web.views.index', name='index'),
+    url(r'^(?P<slug>.*)', 'web.views.region', name='region'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

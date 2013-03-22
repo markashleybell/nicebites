@@ -8,7 +8,6 @@ class LeafletGeoPointAdmin(admin.GeoModelAdmin):
 	map_width = 800
 	map_height = 300
 	map_template = 'gis/admin/leaflet.html'
-	display_wkt = True
 	# extra_js = "http://cdn.leafletjs.com/leaflet-0.5/leaflet.js" # Doesn't work
 	class Media:
 		css = {
@@ -17,7 +16,11 @@ class LeafletGeoPointAdmin(admin.GeoModelAdmin):
         # js = ("http://cdn.leafletjs.com/leaflet-0.5/leaflet.js",) # Doesn't work
 
 class EstablishmentAdmin(LeafletGeoPointAdmin):
+	fields = ['region', 'name', 'address', 'postcode', 'location', 'description', 'telephone', 'web', 'email', 'slug']
 	prepopulated_fields = {"slug": ("name",)}
 
-admin.site.register(Region, LeafletGeoPointAdmin)
+class RegionAdmin(LeafletGeoPointAdmin):
+	prepopulated_fields = {"slug": ("name",)}
+
+admin.site.register(Region, RegionAdmin)
 admin.site.register(Establishment, EstablishmentAdmin)
