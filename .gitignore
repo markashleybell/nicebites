@@ -5,4 +5,5 @@
 *.cfg
 *.sublime-workspace
 settings.py
+settings.py.live
 test-data.sql
