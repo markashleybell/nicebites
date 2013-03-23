@@ -1,6 +1,7 @@
 <html>
     <head>
     	<title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
         <!--[if lte IE 8]>
          <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
@@ -34,6 +35,7 @@
         var _lng = '-4.140386894659514';
         var _km = 1;
         var _regionSlug = '{{ slug }}';
+        var _initialZoom = 14;
 
         function populate(km) {
 
@@ -50,11 +52,11 @@
                 success: function (data, status, request) {
 
                     var _icon = new L.Icon({
-                        iconUrl: 'http://leafletjs.com/dist/images/marker-icon.png',
+                        iconUrl: '/static/marker-icon.png',
                         iconSize: new L.Point(25, 41),
                         iconAnchor: new L.Point(12, 41),
                         popupAnchor: new L.Point(1, -34),
-                        shadowUrl: 'http://leafletjs.com/dist/images/marker-shadow.png',
+                        shadowUrl: '/static/marker-shadow.png',
                         shadowSize: new L.Point(41, 41)
                     });
 
@@ -67,6 +69,20 @@
                         _markers.push(marker);
 
                     });
+
+                    var _redIcon = new L.Icon({
+                        iconUrl: '/static/marker-icon-red.png',
+                        iconSize: new L.Point(25, 41),
+                        iconAnchor: new L.Point(12, 41),
+                        popupAnchor: new L.Point(1, -34),
+                        shadowUrl: '/static/marker-shadow.png',
+                        shadowSize: new L.Point(41, 41)
+                    });
+
+                        var youMarker = new L.Marker(new L.LatLng(_lat, _lng), { icon: _redIcon });
+                        _map.addLayer(youMarker);
+                        youMarker.bindPopup('<h1>YOU ARE HERE</h1>');
+                        _markers.push(youMarker);
 
                 },
                 error: function (request, status, error) { }
@@ -85,9 +101,11 @@
             _mapContainer = $('#map-container');
 
             // Proportionally resize the map when the window size changes
-            $(window).bind('resize', function (e) {
-                _mapContainer.css({ height: (_mapContainer.width() / 3) });
-            });
+            // $(window).bind('resize', function (e) {
+            //     _mapContainer.css({ height: (_mapContainer.width() / 3) });
+            // });
+
+            // $(window).trigger('resize');
 
             _map = L.map('map');
 
@@ -105,7 +123,7 @@
 
             var tiles = new L.TileLayer(tileUrl, {minZoom: 8, maxZoom: 18, attribution: attrib, subdomains: subDomains});
 
-            _map.setView([_lat, _lng], 15);
+            _map.setView([_lat, _lng], _initialZoom);
             _map.addLayer(tiles);
 
             // Initially populate the map with a minimal set of results
@@ -127,7 +145,9 @@
               console.log("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
                 _lat = position.coords.latitude;
                 _lng = position.coords.longitude;
-              _map.setView([_lat, _lng], 15);
+              _map.setView([_lat, _lng], _initialZoom);
+              
+
               populate(_km);
             }
 
