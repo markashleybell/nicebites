@@ -1,0 +1,20 @@
+.rounded-corners (@radius: 5px) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -ms-border-radius: @radius;
+  -o-border-radius: @radius;
+  border-radius: @radius;
+}
+
+#map-container {
+    border: solid 1px #BCBCBC;
+    height: 400px;
+}
+
+#map {
+    height: 100%;
+}
+
+.leaflet-popup-content-wrapper {
+    .rounded-corners;
+}
