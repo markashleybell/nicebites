@@ -18,7 +18,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # Route which returns JSON establishment data
-	url(r'^region/(?P<slug>.*)', 'web.views.region_json', name='region_json'),
+	url(r'^region/nearest', 'web.views.nearest_region_json', name='nearest_region_json'),
+    url(r'^region/(?P<id>\d+)', 'web.views.region_json', name='region_json'),
     # Catch-all route for region folder e.g http://nicebites.in/plymouth
     url(r'^(?P<slug>.*)', 'web.views.region', name='region'),
 )

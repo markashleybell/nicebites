@@ -1,166 +1,27 @@
-<html>
-    <head>
-    	<title></title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
-        <!--[if lte IE 8]>
-         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
-        <![endif]-->
-        <link rel="stylesheet" type="text/css" href="/static/css/main.css" />
-    </head>
-    <body>
-        <div id="map-container">
-            <div id="map">Loading map...</div>
-        </div>
-        <div class="btn-group" data-toggle="buttons-radio" id="distance-selector">
-            <button type="button" data-distance="0.2" class="btn active">200m</button>
-            <button type="button" data-distance="0.5"class="btn">500m</button>
-            <button type="button" data-distance="0.75" class="btn">750km</button>
-            <button type="button" data-distance="1" class="btn">1km</button>
-            <button type="button" data-distance="1.5" class="btn">1.5km</button>
-            <button type="button" data-distance="2" class="btn">2km</button>
-            <button type="button" data-distance="5" class="btn">5km</button>
-        </div>
-        <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type="text/javascript">
+{% extends "web/layout.html" %}
 
-        var _mapContainer;
+{% block title %}{{ region.name }}{% endblock %}
 
-        var _map, _marker, _markers = [];
+{% block content %}
 
-        var _lat = '50.36833260763417';
-        var _lng = '-4.140386894659514';
-        var _km = 1;
-        var _regionSlug = '{{ slug }}';
-        var _initialZoom = 14;
+    <div id="map-container">
+        <div id="map">Loading map...</div>
+    </div>
+    <div id="distance-selector">
+        <button type="button" data-distance="0.2" class="btn active">200m</button>
+        <button type="button" data-distance="0.5"class="btn">500m</button>
+        <button type="button" data-distance="0.75" class="btn">750m</button>
+        <button type="button" data-distance="1" class="btn">1km</button>
+        <button type="button" data-distance="1.5" class="btn">1.5km</button>
+        <button type="button" data-distance="2" class="btn">2km</button>
+        <button type="button" data-distance="5" class="btn">5km</button>
+    </div>
 
-        function populate(km) {
+{% endblock %}
 
-            // Remove all the previous markers
-            // TODO: This can be more efficient if we initially add markers to a layer group
-            // See http://leafletjs.com/examples/layers-control.html
-            for(var i=0; i<_markers.length; i++) {
-                _map.removeLayer(_markers[i]);
-            }
+{% block scripts %}
 
-            $.ajax({
-                url: '/region/' + _regionSlug + '?lng=' + _lng + '&lat=' + _lat + '&distance=' + km,
-                dataType: 'json',
-                success: function (data, status, request) {
+    <script type="text/javascript" src="/static/js/NiceBites.js"></script>
+    <script type="text/javascript" src="/static/js/region.js"></script>
 
-                    var _icon = new L.Icon({
-                        iconUrl: '/static/img/marker-icon.png',
-                        iconSize: new L.Point(25, 41),
-                        iconAnchor: new L.Point(12, 41),
-                        popupAnchor: new L.Point(1, -34),
-                        shadowUrl: '/static/img/marker-shadow.png',
-                        shadowSize: new L.Point(41, 41)
-                    });
-
-                    $.each(data, function(i, item) {
-
-                        var position = new L.LatLng(item.lat, item.lng);
-                        var marker = new L.Marker(position, { icon: _icon });
-                        _map.addLayer(marker);
-                        marker.bindPopup('<h1>' + item.name + '</h1>' + item.postcode);
-                        _markers.push(marker);
-
-                    });
-
-                    var _redIcon = new L.Icon({
-                        iconUrl: '/static/img/marker-icon-red.png',
-                        iconSize: new L.Point(25, 41),
-                        iconAnchor: new L.Point(12, 41),
-                        popupAnchor: new L.Point(1, -34),
-                        shadowUrl: '/static/img/marker-shadow.png',
-                        shadowSize: new L.Point(41, 41)
-                    });
-
-                        var youMarker = new L.Marker(new L.LatLng(_lat, _lng), { icon: _redIcon });
-                        _map.addLayer(youMarker);
-                        youMarker.bindPopup('<h1>YOU ARE HERE</h1>');
-                        _markers.push(youMarker);
-
-                },
-                error: function (request, status, error) { }
-            });
-
-        }
-
-        $(function () {
-
-            // Bind the distance buttons in the header bar
-            $('#distance-selector button').on('click', function(evt) {
-                evt.preventDefault();
-                populate($(this).data('distance'));
-            });
-
-            _mapContainer = $('#map-container');
-
-            // Proportionally resize the map when the window size changes
-            // $(window).bind('resize', function (e) {
-            //     _mapContainer.css({ height: (_mapContainer.width() / 3) });
-            // });
-
-            // $(window).trigger('resize');
-
-            _map = L.map('map');
-
-            // This is the standard OpenMapQuest tile URL
-            var subDomains = ['otile1','otile2','otile3','otile4'];
-            var tileUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
-
-            // MapBox
-            // var subDomains = ['a','b','c','d'];
-            // var tileUrl = 'http://{s}.tiles.mapbox.com/v3/base.live-streets/{z}/{x}/{y}.png';
-
-            var attrib = 'Data, imagery and map information provided by <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>, ' +
-                         '<a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors, ' + 
-                         '<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
-
-            var tiles = new L.TileLayer(tileUrl, {minZoom: 8, maxZoom: 18, attribution: attrib, subdomains: subDomains});
-
-            _map.setView([_lat, _lng], _initialZoom);
-            _map.addLayer(tiles);
-
-            // Initially populate the map with a minimal set of results
-            populate(_km);
-
-            if (navigator.geolocation) {
-              var timeoutVal = 10 * 1000 * 1000;
-              navigator.geolocation.getCurrentPosition(
-                displayPosition, 
-                displayError,
-                { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
-              );
-            }
-            else {
-              alert("Geolocation is not supported by this browser");
-            }
-
-            function displayPosition(position) {
-              console.log("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
-                _lat = position.coords.latitude;
-                _lng = position.coords.longitude;
-              _map.setView([_lat, _lng], _initialZoom);
-              
-
-              populate(_km);
-            }
-
-            function displayError(error) {
-              var errors = { 
-                1: 'Permission denied',
-                2: 'Position unavailable',
-                3: 'Request timeout'
-              };
-              console.log("Error: " + errors[error.code]);
-            }
-
-        });
-
-
-        </script>
-    </body>
-</html>
+{% endblock %}
