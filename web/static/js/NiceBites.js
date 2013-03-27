@@ -66,7 +66,7 @@ var NiceBites = (function() {
             });
         },
         loadMarkers: function(area) {
-            _map.setView([area.lat, area.lng], area.zoom);
+            _map.setView([area.position.lat, area.position.lng], area.zoom);
 
             // Remove all the previous markers
             // TODO: This can be more efficient if we initially add markers to a layer group
@@ -76,7 +76,7 @@ var NiceBites = (function() {
             }
 
             $.ajax({
-                url: '/region/' + area.regionId + '?lng=' + area.lng + '&lat=' + area.lat + '&distance=' + area.range,
+                url: '/region/' + area.regionId + '?lng=' + area.position.lng + '&lat=' + area.position.lat + '&distance=' + area.range,
                 dataType: 'json',
                 success: function (data, status, request) {
 
@@ -90,7 +90,7 @@ var NiceBites = (function() {
 
                     });
 
-                    var youMarker = new L.Marker(new L.LatLng(area.lat, area.lng), { icon: NiceBites.createIcon('red') });
+                    var youMarker = new L.Marker(new L.LatLng(area.position.lat, area.position.lng), { icon: NiceBites.createIcon('red') });
                     _map.addLayer(youMarker);
                     youMarker.bindPopup('<h1>YOU ARE HERE</h1>');
                     _markers.push(youMarker);
