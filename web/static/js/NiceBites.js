@@ -6,8 +6,8 @@ var NiceBites = (function() {
     var _tileUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
 
     // MapBox
-    // var subDomains = ['a','b','c','d'];
-    // var tileUrl = 'http://{s}.tiles.mapbox.com/v3/base.live-streets/{z}/{x}/{y}.png';
+    // var _subDomains = ['a','b','c','d'];
+    // var _tileUrl = 'http://{s}.tiles.mapbox.com/v3/markashleybell.map-saq6rwjg/{z}/{x}/{y}.png';
 
     var _attrib = 'Data, imagery and map information provided by <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>, ' +
                   '<a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors, ' + 
@@ -15,13 +15,20 @@ var NiceBites = (function() {
 
     var _tiles = null;
     var _markers = [];
+    var _positionMarker = null;
     var _log = [];
 
     return {
         init: function(mapDiv) {
             _map = L.map(mapDiv);
-            _tiles = new L.TileLayer(_tileUrl, { minZoom: 8, maxZoom: 18, attribution: _attrib, subdomains: _subDomains });
+            _tiles = new L.TileLayer(_tileUrl, { 
+                minZoom: 8, 
+                maxZoom: 18, 
+                attribution: _attrib, 
+                subdomains: _subDomains 
+            });
             _map.addLayer(_tiles);
+            _log.push('Map initialised');
         },
         getLog: function() {
             return _log;
@@ -36,7 +43,7 @@ var NiceBites = (function() {
                         lng: position.coords.longitude
                     };
 
-                    _log.push('Retrieved position: ' + clientPosition);
+                    _log.push('Retrieved position: [' + clientPosition.lat + ',' + clientPosition.lng + ']');
                     callback(clientPosition);
 
                 }, function(error) {
@@ -65,9 +72,22 @@ var NiceBites = (function() {
                 shadowSize: new L.Point(41, 41)
             });
         },
-        loadMarkers: function(area) {
-            _map.setView([area.position.lat, area.position.lng], area.zoom);
+        positionMap: function(options) {
+            _map.setView([options.position.lat, options.position.lng], options.zoom);
 
+            if(_positionMarker !== null)
+                _map.removeLayer(_positionMarker);
+
+            _positionMarker = new L.Marker(new L.LatLng(options.position.lat, options.position.lng), { 
+                icon: NiceBites.createIcon('red') 
+            });
+            _map.addLayer(_positionMarker);
+            _positionMarker.bindPopup('<h1>YOU ARE HERE</h1>');
+            _log.push('Map position and zoom set');
+            if(typeof options.callback === 'function')
+                options.callback();
+        },
+        loadMarkers: function(options) {
             // Remove all the previous markers
             // TODO: This can be more efficient if we initially add markers to a layer group
             // See http://leafletjs.com/examples/layers-control.html
@@ -75,8 +95,11 @@ var NiceBites = (function() {
                 _map.removeLayer(_markers[i]);
             }
 
+            var ajaxUrl = '/region/' + options.regionId + '?lng=' + options.position.lng + 
+                          '&lat=' + options.position.lat + '&distance=' + options.range;
+
             $.ajax({
-                url: '/region/' + area.regionId + '?lng=' + area.position.lng + '&lat=' + area.position.lat + '&distance=' + area.range,
+                url: ajaxUrl,
                 dataType: 'json',
                 success: function (data, status, request) {
 
@@ -90,15 +113,14 @@ var NiceBites = (function() {
 
                     });
 
-                    var youMarker = new L.Marker(new L.LatLng(area.position.lat, area.position.lng), { icon: NiceBites.createIcon('red') });
-                    _map.addLayer(youMarker);
-                    youMarker.bindPopup('<h1>YOU ARE HERE</h1>');
-                    _markers.push(youMarker);
+                    _log.push('Marker positions loaded');
 
-                    if(typeof area.callback === 'function')
-                        area.callback();
+                    if(typeof options.callback === 'function')
+                        options.callback();
                 },
-                error: function (request, status, error) { }
+                error: function (request, status, error) { 
+                    _log.push('Error loading marker JSON: ' + error);
+                }
             });
         }
     }

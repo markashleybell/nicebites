@@ -16,22 +16,33 @@ $(function () {
 
     // Initially load the map centred on the region
     NiceBites.init('map');
+    NiceBites.positionMap({
+        position: clientPosition,
+        zoom: 15,
+        callback: function() { }
+    });
     NiceBites.loadMarkers({
         position: clientPosition,
         zoom: 15,
         range: 5,
         regionId: 1,
         callback: function() {
-            console.log('Initial Map');
             NiceBites.getClientPosition(function(pos) {
                 clientPosition = pos;
+                NiceBites.positionMap({
+                    position: clientPosition,
+                    zoom: 15,
+                    callback: function() { }
+                });
                 NiceBites.loadMarkers({
                     position: pos,
                     zoom: 15,
                     range: 5,
                     regionId: 1,
-                    callback: function() {
-                        console.log('Got Client Position');
+                    callback: function() { 
+                        var log = NiceBites.getLog();
+                        for(var i=0; i<log.length; i++)
+                            console.log(log[i]);
                     }
                 });
             });
