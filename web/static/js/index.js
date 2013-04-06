@@ -1,11 +1,9 @@
 $(function () {
 
     var clientPosition = {
-        lat: '50.36833260763417',
-        lng: '-4.140386894659514'
+        lat: '54.142667423078684',
+        lng: '-2.8559632028200213'
     };
-
-    //_mapContainer = $('#map-container');
 
     // Proportionally resize the map when the window size changes
     // $(window).bind('resize', function (e) {
@@ -15,39 +13,7 @@ $(function () {
     // $(window).trigger('resize');
 
     // Initially load the map centred on the region
-    NiceBites.init('map');
-    NiceBites.positionMap({
-        position: clientPosition,
-        zoom: 15,
-        callback: function() { }
-    });
-    NiceBites.loadMarkers({
-        position: clientPosition,
-        zoom: 15,
-        range: 5,
-        regionId: 1,
-        callback: function() {
-            NiceBites.getClientPosition(function(pos) {
-                clientPosition = pos;
-                NiceBites.positionMap({
-                    position: clientPosition,
-                    zoom: 15,
-                    callback: function() { }
-                });
-                NiceBites.loadMarkers({
-                    position: pos,
-                    zoom: 15,
-                    range: 5,
-                    regionId: 1,
-                    callback: function() { 
-                        var log = NiceBites.getLog();
-                        for(var i=0; i<log.length; i++)
-                            console.log(log[i]);
-                    }
-                });
-            });
-        }
-    });
+    NiceBites.init('map', clientPosition, 7);
     
     // Bind the range buttons
     $('#distance-selector button').on('click', function(evt) {
@@ -55,8 +21,6 @@ $(function () {
         var r = $(this).data('distance');
 
         NiceBites.loadMarkers({ 
-            position: clientPosition, 
-            zoom: 15,
             range: r,
             regionId: 1,
             callback: function() {

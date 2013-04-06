@@ -29,7 +29,7 @@ def region_json(request, id):
     point = fromstr('POINT(' + lng + '  ' + lat + ')', srid=4326)
     establishments = Establishment.objects.filter(region__id__exact=id, location__distance_lte=(point, D(km=distance)))
     #return HttpResponse(Establishment.objects.filter(region__id__exact=id, location__distance_lte=(point, D(km=distance))).query.__str__())
-    subs = [{ 'name': e.name, 'lng': e.location.x, 'lat': e.location.y, 'postcode': e.postcode } for e in establishments]
+    subs = [{ 'name': e.name, 'lng': e.location.x, 'lat': e.location.y, 'postcode': e.postcode, 'tags': e.get_tag_names() } for e in establishments]
     # return HttpResponse(subs)
     # return HttpResponse(serializers.serialize("json", subs), content_type="application/json")
     return HttpResponse(dumps(subs), content_type="application/json")
