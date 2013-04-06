@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from taggit.managers import TaggableManager
 
 class Region(models.Model):
 	def __unicode__(self):
@@ -21,3 +22,4 @@ class Establishment(models.Model):
 	web = models.CharField(max_length=256, null=True, blank=True)
 	location = models.PointField(srid=4326)
 	objects = models.GeoManager()
+	tags = TaggableManager()

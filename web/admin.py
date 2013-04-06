@@ -16,7 +16,7 @@ class LeafletGeoPointAdmin(admin.GeoModelAdmin):
         # js = ("http://cdn.leafletjs.com/leaflet-0.5/leaflet.js",) # Doesn't work
 
 class EstablishmentAdmin(LeafletGeoPointAdmin):
-	fields = ['region', 'name', 'address', 'postcode', 'location', 'description', 'telephone', 'web', 'email', 'slug']
+	fields = ['region', 'name', 'tags', 'address', 'postcode', 'location', 'description', 'telephone', 'web', 'email', 'slug']
 	prepopulated_fields = {"slug": ("name",)}
 
 class RegionAdmin(LeafletGeoPointAdmin):

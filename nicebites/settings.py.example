@@ -117,6 +117,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'web',
+    'taggit',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
