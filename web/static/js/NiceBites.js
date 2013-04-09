@@ -1,7 +1,8 @@
 // Global application module
 var NiceBites = (function() {
-    // Private reference to the map
+    // Private references to the map and control container
     var _map = null;
+    var _controls = null;
     // OpenMapQuest tile details
     var _subDomains = ['otile1','otile2','otile3','otile4'];
     var _tileUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
@@ -81,7 +82,17 @@ var NiceBites = (function() {
         },
         // Centre the map and place the 'you are here' marker
         positionMap: function(position, zoom) {
-            _map.setView([position.lat, position.lng], zoom);            
+            // Get the current width of the control container div
+            var controlsWidth = _controls.width();
+            // Convert the position object into a Leaflet LatLng object so we can transform it
+            var latLng = new L.LatLng(position.lat, position.lng);
+            // Get the pixel co-ordinates of the desired lat/lng, then
+            // add the width of the control container to the x value
+            var targetPoint = _map.project(latLng, zoom).add([controlsWidth / 2, 0]);
+            // Convert the pixel co-ordinates back into lat/lng
+            var targetLatLng = _map.unproject(targetPoint, zoom);
+            // Centre the map on the offset co-ordinates
+            _map.setView([targetLatLng.lat, targetLatLng.lng], zoom);            
             _log.push('Map position set');
         },
         loadMarkers: function(options) {
@@ -118,7 +129,15 @@ var NiceBites = (function() {
         },
         // Initialise the map and tiles
         init: function(mapDiv, fallbackPosition, zoom) {
+            // Store references to the map and controls
             _map = L.map(mapDiv);
+            _controls = $('#controls');
+            // Create a new attribution control
+            var attribution = new L.Control.Attribution({
+                position: 'bottomleft',
+                prefix: false
+            });
+            // Create the map tile layer
             _tiles = new L.TileLayer(_tileUrl, { 
                 minZoom: 7, 
                 maxZoom: 18, 
@@ -126,6 +145,10 @@ var NiceBites = (function() {
                 subdomains: _subDomains 
             });
             _map.addLayer(_tiles);
+            // Remove the default attribution control and add our custom attribution,
+            // because there seems to be no way to simply move the default control to the left...
+            _map.removeControl(_map.attributionControl);
+            _map.addControl(attribution);
             _log.push('Map initialised');
             // Set current position to fallback co-ordinates 
             // in case geolocation fails or isn't supported
